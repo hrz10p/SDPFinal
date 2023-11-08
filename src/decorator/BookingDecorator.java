@@ -1,7 +1,6 @@
 package decorator;
 
 import booking.Booking;
-import observer.HotelRoom;
 
 public abstract class BookingDecorator implements BookingInterface {
     protected Booking booking;

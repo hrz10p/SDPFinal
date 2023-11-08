@@ -1,4 +1,4 @@
-package observer;
+package factory;
 
 public class HotelRoom {
     private double price;

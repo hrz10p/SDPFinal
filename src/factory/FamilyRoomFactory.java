@@ -1,7 +1,5 @@
 package factory;
 
-import observer.HotelRoom;
-
 public class FamilyRoomFactory implements RoomFactory{
     @Override
     public HotelRoom createRoom() {

@@ -1,7 +1,6 @@
 package decorator;
 
 import booking.Booking;
-import observer.HotelRoom;
 
 public class TransferDecorator extends BookingDecorator {
     public TransferDecorator(Booking booking) {
@@ -10,7 +9,7 @@ public class TransferDecorator extends BookingDecorator {
 
     @Override
     public double getPrice() {
-        return super.getPrice() + 20.0; // Add transfer cost.
+        return super.getPrice() + 10000.0; // Add transfer cost.
     }
 
     @Override

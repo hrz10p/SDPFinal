@@ -9,7 +9,7 @@ public class ExcursionDecorator extends BookingDecorator {
 
     @Override
     public double getPrice() {
-        return super.getPrice() + 10.0; // Add breakfast cost.
+        return super.getPrice() + 30000.0; // Add breakfast cost.
     }
 
     @Override

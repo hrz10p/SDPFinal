@@ -1,7 +1,6 @@
 package singleton;
 
 import booking.Booking;
-import observer.HotelRoom;
 
 import java.util.ArrayList;
 import java.util.List;
