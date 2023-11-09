@@ -35,7 +35,7 @@ public class Booking implements Observer, BookingPayment, BookingInterface {
 
     @Override
     public void update(String msg) {
-        System.out.printf("Booking with id %d , room type %s, client name %s gets notification: %s",this.id , this.room.getDescription(), this.client, msg);
+        System.out.printf("Booking with id %d , room type %s, client name %s gets notification: %s\n",this.id , this.room.getDescription(), this.client, msg);
     }
 
     @Override
