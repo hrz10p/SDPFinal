@@ -19,6 +19,7 @@ public class Main {
         HotelManager manager = HotelManager.getInstance();
         manager.BookRoom(b);
         manager.FireAlarm();
+        //TODO aza was here
         b.check();
     }
 }
