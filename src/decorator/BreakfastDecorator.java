@@ -1,19 +1,17 @@
 package decorator;
+import factory.Room;
 
-import booking.Booking;
-
-public class BreakfastDecorator extends BookingDecorator {
-    public BreakfastDecorator(Booking booking) {
-        super(booking);
+public class BreakfastDecorator extends BookingDecorator{
+    public BreakfastDecorator(Room room){
+        super(room);
     }
-
-    @Override
-    public double getPrice() {
-        return super.getPrice() + 5000.0; // Add breakfast cost.
-    }
-
     @Override
     public String getDescription() {
-        return super.getDescription() + " with Breakfast";
+        return room.getDescription() + "with Breakfast";
+    }
+
+    @Override
+    public double getCost() {
+        return room.getCost() + 5000.0;
     }
 }

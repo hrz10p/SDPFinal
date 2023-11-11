@@ -1,19 +1,19 @@
 package decorator;
 
-import booking.Booking;
+import factory.Room;
 
 public class TransferDecorator extends BookingDecorator {
-    public TransferDecorator(Booking booking) {
-        super(booking);
+    public TransferDecorator(Room room) {
+        super(room);
     }
 
     @Override
-    public double getPrice() {
-        return super.getPrice() + 10000.0; // Add transfer cost.
+    public double getCost() {
+        return room.getCost() + 10000; // Adding transfer cost
     }
 
     @Override
     public String getDescription() {
-        return super.getDescription() + " with Transfer";
+        return room.getDescription() + ", with Transfer";
     }
 }

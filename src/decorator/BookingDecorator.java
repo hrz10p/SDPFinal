@@ -1,25 +1,17 @@
 package decorator;
+import factory.Room;
 
-import booking.Booking;
-
-public abstract class BookingDecorator implements BookingInterface {
-    protected Booking booking;
-
-    public BookingDecorator(Booking booking) {
-        this.booking = booking;
-    }
-
-    @Override
-    public double getPrice() {
-        return booking.getPrice();
-    }
-
-    @Override
+abstract class BookingDecorator implements Room {
+protected Room room;
+public BookingDecorator(Room room){
+    this.room = room;
+}
     public String getDescription() {
-        return booking.getDescription();
+        return room.getDescription();
+    }
+
+    @Override
+    public double getCost() {
+        return room.getCost();
     }
 }
-
-
-
-

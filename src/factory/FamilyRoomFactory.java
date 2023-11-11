@@ -1,8 +1,7 @@
 package factory;
 
-public class FamilyRoomFactory implements RoomFactory{
-    @Override
-    public HotelRoom createRoom() {
-        return new HotelRoom("Family" , 35000);
+public class FamilyRoomFactory implements RoomFactory {
+    public Room createRoom() {
+        return new FamilyRoom();
     }
 }

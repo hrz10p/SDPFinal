@@ -1,6 +1,5 @@
 package factory;
 
 public interface RoomFactory {
-    HotelRoom createRoom();
+    Room createRoom();
 }
-
