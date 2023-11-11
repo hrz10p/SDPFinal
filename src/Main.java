@@ -6,6 +6,7 @@ import factory.LuxuryRoom;
 import factory.LuxuryRoomFactory;
 import factory.Room;
 import factory.RoomFactory;
+import singleton.HotelManager;
 import strategy.LastMinurePricingStrategy;
 import strategy.PricingStrategy;
 
@@ -16,7 +17,9 @@ public class Main {
         RoomFactory luxuryFactory=new LuxuryRoomFactory();
         Room luxury=luxuryFactory.createRoom();
         Booking b=new Booking(luxury,s,"aza",p);
-        b.update("aaa");
+        HotelManager manager = HotelManager.getInstance();
+        manager.BookRoom(b);
+        manager.FireAlarm();
         b.check();
         Room breakfastAndLux=new BreakfastDecorator(luxury);
         Booking n=new Booking(breakfastAndLux,s,"yerla",p);
