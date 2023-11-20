@@ -23,6 +23,7 @@ public class HotelManager {
     public void BookRoom(Booking booking){
         this.bookings.add(booking);
     }
+    public void RemoveBooking(Booking booking){this.bookings.remove(booking);}
 
     public void FireAlarm(){
         notifyRooms("Fire alarm was triggered");

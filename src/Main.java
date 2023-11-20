@@ -2,6 +2,7 @@ import adapter.KaspiPayment;
 import adapter.PaymentSystem;
 import booking.Booking;
 import decorator.BreakfastDecorator;
+import decorator.TransferDecorator;
 import factory.LuxuryRoom;
 import factory.LuxuryRoomFactory;
 import factory.Room;
@@ -21,8 +22,11 @@ public class Main {
         manager.BookRoom(b);
         manager.FireAlarm();
         b.check();
-        Room breakfastAndLux=new BreakfastDecorator(luxury);
-        Booking n=new Booking(breakfastAndLux,s,"yerla",p);
+        luxury = new BreakfastDecorator(luxury);
+        luxury = new TransferDecorator(luxury);
+
+        Booking n=new Booking(luxury,s,"yerla",p);
         n.check();
+        System.out.println(n.getDescription());
     }
 }
