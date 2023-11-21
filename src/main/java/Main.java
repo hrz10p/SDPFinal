@@ -2,7 +2,6 @@ import adapter.*;
 import booking.Booking;
 import db.DatabaseManager;
 import db.User;
-import decorator.BookingInterface;
 import decorator.BreakfastDecorator;
 import decorator.ExcursionDecorator;
 import decorator.TransferDecorator;
@@ -13,150 +12,227 @@ import strategy.LastMinurePricingStrategy;
 import strategy.PricingStrategy;
 import strategy.StandardPricingStrategy;
 
+
+
 import java.util.Scanner;
+
+
 public class Main {
     public static void main(String[] args) {
-
-        HotelManager hotelManager=HotelManager.getInstance();
-        DatabaseManager db=DatabaseManager.getInstance();
-        System.out.println("Welcome to our hotel");
-        System.out.println("Please choose which room you want?");
-        System.out.println("Select a room type:");
-        System.out.println("1. Family Room");
-        System.out.println("2. Luxury Room");
-        System.out.println("3. Standard Room");
+        HotelManager hotelManager = HotelManager.getInstance();
+        DatabaseManager db = DatabaseManager.getInstance();
         Scanner scanner = new Scanner(System.in);
-        int roomChoice = scanner.nextInt();
-        RoomFactory roomFactory;
-        if (roomChoice == 1) {
-            roomFactory = new FamilyRoomFactory();
-        } else if (roomChoice == 2) {
-            roomFactory = new LuxuryRoomFactory();
-        } else if (roomChoice == 3) {
-            roomFactory = new StandardRoomFactory();
-        } else {
-            System.out.println("Invalid room choice. Returning to main menu.");
-            return;
+        while (true) {
+            System.out.println("Welcome to our hotel");
+            System.out.println("Please choose your role:");
+            System.out.println("1. User");
+            System.out.println("2. Admin");
+            System.out.println("3. Exit");
+
+            int roleChoice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (roleChoice) {
+                case 1 -> handleUser(scanner, hotelManager, db);
+                case 2 -> handleAdmin(db);
+                case 3 -> {
+                    System.out.println("Exiting the program. Thank you!");
+                    return;
+                }
+                default -> System.out.println("Invalid choice. Please enter '1', '2', or '3'.");
+            }
         }
-        Room room = roomFactory.createRoom();
+    }
 
-        System.out.println("Select some pluses to your room:");
-        System.out.println("1. Breakfast");
-        System.out.println("2. Excursion");
-        System.out.println("3. Transfer");
-        System.out.println("4.None");
-        int addChoice= scanner.nextInt();
-        switch (addChoice){
-            case 1:
-                room=new BreakfastDecorator(room);
-                break;
-            case 2:
-                room=new ExcursionDecorator(room);
-                break;
-            case 3:
-                room=new TransferDecorator(room);
-                break;
-            case 4:
-                break;
-            default:
-                System.out.println("Invalid pricing strategy choice. Returning to main menu.");
-                return;
-        }
-        System.out.println("Enter the number of days:");
-        int numberOfDays = scanner.nextInt();
+    private static void handleUser(Scanner scanner, HotelManager hotelManager, DatabaseManager db) {
+        while (true) {
+            System.out.println("Please choose which room you want?");
+            System.out.println("Select a room type:");
+            System.out.println("1. Family Room");
+            System.out.println("2. Luxury Room");
+            System.out.println("3. Standard Room");
+            System.out.println("4. None (to exit)");
 
-        System.out.println("Do you have an existing account?");
-        System.out.println("1. Yes");
-        System.out.println("2. No");
-        int response =scanner.nextInt();
-        if (response==1) {
-            System.out.println("Enter your user name:");
-            String userName = scanner.nextLine();
+            int roomChoice = scanner.nextInt();
+            scanner.nextLine();
 
-            User existingUser = db.getUserByName(userName);
+            if (roomChoice == 4) {
+                System.out.println("Exiting user session. Returning to the main menu.");
+                break;
+            }
 
-            if (existingUser != null) {
-                System.out.println("User found: " + existingUser);
-            } else {
-                System.out.println("User not found. Please create a new account.");
+            RoomFactory roomFactory;
+
+            switch (roomChoice) {
+                case 1 -> roomFactory = new FamilyRoomFactory();
+                case 2 -> roomFactory = new LuxuryRoomFactory();
+                case 3 -> roomFactory = new StandardRoomFactory();
+                default -> {
+                    System.out.println("Invalid room choice. Please choose again.");
+                    continue;
+                }
+            }
+
+            Room room = roomFactory.createRoom();
+
+            while (true) {
+                System.out.println("Select some pluses for your room:");
+                System.out.println("1. Breakfast");
+                System.out.println("2. Excursion");
+                System.out.println("3. Transfer");
+                System.out.println("4. None (to finish booking)");
+
+                int addChoice = scanner.nextInt();
+                scanner.nextLine();
+
+                switch (addChoice) {
+                    case 1:
+                        room = new BreakfastDecorator(room);
+                        break;
+                    case 2:
+                        room = new ExcursionDecorator(room);
+                        break;
+                    case 3:
+                        room = new TransferDecorator(room);
+                        break;
+                    case 4:
+                        break;
+                    default:
+                        System.out.println("Invalid choice. Please choose again.");
+                        continue;
+                }
+                break;
+            }
+
+            System.out.println("Enter the number of days:");
+            int numberOfDays = scanner.nextInt();
+            scanner.nextLine();
+
+            System.out.println("Do you have an existing account?");
+            System.out.println("1. Yes");
+            System.out.println("2. No");
+
+            int response = scanner.nextInt();
+            scanner.nextLine();
+
+            String userName;
+
+            if (response == 1) {
+                System.out.println("Enter your user name:");
+                userName = scanner.nextLine();
+
+                User existingUser = db.getUserByName(userName);
+
+                if (existingUser != null) {
+                    System.out.println("User found: " + existingUser);
+                    db.addBooking(room.getCost(), db.addUser(userName, db.getPasswordByUsername(userName)), "Booking for " + userName);
+                } else {
+                    System.out.println("User not found. Please create a new account.");
+                    System.out.println("Enter user name:");
+                    userName = scanner.nextLine();
+                    System.out.println("Enter user password:");
+                    String password = scanner.nextLine();
+                    db.addBooking(room.getCost(), db.addUser(userName, password), "Booking for " + userName);
+                }
+            } else if (response == 2) {
                 System.out.println("Enter user name:");
                 userName = scanner.nextLine();
-                scanner.nextLine(); // Consume the newline character
                 System.out.println("Enter user password:");
                 String password = scanner.nextLine();
-
-
-                db.addUser(userName, password);
-                System.out.println("User added");
-
-                db.addBooking(room.getCost(), "Booking for " + userName);
+                db.addBooking(room.getCost(), db.addUser(userName, password), "Booking for " + userName);
+            } else {
+                System.out.println("Invalid response. Please enter '1' or '2'.");
+                continue;
             }
-        } else if (response==2) {
-            System.out.println("Enter user name:");
-            String userName = scanner.nextLine();
 
-            System.out.println("Enter user password:");
-            String password = scanner.nextLine();
-            scanner.nextLine(); // Consume the newline character
+            System.out.println("Enter your name:");
+            String clientName = scanner.nextLine();
 
-            db.addUser(userName, password);
-            System.out.println("User added");
+            PricingStrategy pricingStrategy;
 
-            db.addBooking( room.getCost(), "Booking for " + userName);
-        } else {
-            System.out.println("Invalid response. Please enter 'yes' or 'no'.");
+            while (true) {
+                System.out.println("Pricing:");
+                System.out.println("1. Standard Pricing");
+                System.out.println("2. Discount Pricing");
+                System.out.println("3. Last Minute Pricing");
+
+                int strategyChoice = scanner.nextInt();
+
+                switch (strategyChoice) {
+                    case 1 -> pricingStrategy = new StandardPricingStrategy();
+                    case 2 -> pricingStrategy = new DiscountPricingStrategy();
+                    case 3 -> pricingStrategy = new LastMinurePricingStrategy();
+                    default -> {
+                        System.out.println("Invalid pricing strategy choice. Please choose again.");
+                        continue;
+                    }
+                }
+                break;
+            }
+
+            PaymentSystem paymentSystem;
+
+            while (true) {
+                System.out.println("Payment type:");
+                System.out.println("1. Kaspi");
+                System.out.println("2. CreditCard");
+
+                int paymentChoice = scanner.nextInt();
+
+                switch (paymentChoice) {
+                    case 1 -> paymentSystem = new KaspiPayment();
+                    case 2 -> paymentSystem = new CreditCardPayment();
+                    default -> {
+                        System.out.println("Invalid pricing strategy choice. Please choose again.");
+                        continue;
+                    }
+                }
+                break;
+            }
+
+            Booking booking = new Booking(room, pricingStrategy, clientName, paymentSystem, numberOfDays);
+            hotelManager.BookRoom(booking);
+
+            System.out.println("Booking Information:");
+            System.out.println("--------------------");
+            booking.update("aa");
+            System.out.println();
+            booking.check();
+            db.showBookingsForUserName(userName);
+
+            System.out.println("Do you want to make another booking?");
+            System.out.println("1. Yes");
+            System.out.println("2. No");
+
+            int continueChoice = scanner.nextInt();
+
+            if (continueChoice != 1) {
+                System.out.println("Exiting user session. Returning to the main menu.");
+                break;
+            }
         }
+    }
 
+    private static void handleAdmin(DatabaseManager db) {
+        while (true) {
+            System.out.println("Admin access - Options:");
+            System.out.println("1. View Database");
+            System.out.println("2. Back to Main Menu");
 
-        scanner.nextLine(); // Consume the newline character
+            Scanner adminScanner = new Scanner(System.in);
+            int adminChoice = adminScanner.nextInt();
+            adminScanner.nextLine();
 
-        System.out.println("Enter your name:");
-        String clientName = scanner.nextLine();
-        PricingStrategy pricingStrategy;
-        System.out.println("Pricing:");
-        System.out.println("1. Standard Pricing");
-        System.out.println("2. Discount Pricing");
-        System.out.println("3. Last Minute Pricing");
-        int strategyChoice = scanner.nextInt();
-        switch (strategyChoice) {
-            case 1:
-                pricingStrategy = new StandardPricingStrategy();
-                break;
-            case 2:
-                pricingStrategy = new DiscountPricingStrategy();
-                break;
-            case 3:
-                pricingStrategy = new LastMinurePricingStrategy();
-                break;
-            default:
-                System.out.println("Invalid pricing strategy choice. Returning to main menu.");
-                return;
+            switch (adminChoice) {
+                case 1 -> db.showAllBookings();
+                case 2 -> {
+                    System.out.println("Exiting admin session. Returning to the main menu.");
+                    return;
+                }
+                default -> System.out.println("Invalid choice. Please enter '1' or '2'.");
+            }
         }
-        PaymentSystem paymentSystem;
-        System.out.println("Payment type:");
-        System.out.println("1. Kaspi");
-        System.out.println("2. CreditCard");
-        int paymentChoice=scanner.nextInt();
-        switch (paymentChoice) {
-            case 1:
-                paymentSystem= new KaspiPayment();
-                break;
-            case 2:
-                paymentSystem= new CreditCardPayment();
-                break;
-            default:
-                System.out.println("Invalid pricing strategy choice. Returning to main menu.");
-                return;
-        }
-        Booking booking=new Booking(room,pricingStrategy,clientName,paymentSystem,numberOfDays);
-        hotelManager.BookRoom(booking);
-        System.out.println("Booking Information:");
-        System.out.println("--------------------");
-        booking.update("aa");
-        System.out.println();
-        booking.check();
-        db.showAllBookings();
-        db.closeConnection();
-
     }
 }
+
+

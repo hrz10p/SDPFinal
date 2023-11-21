@@ -1,10 +1,6 @@
 package db;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class DatabaseManager {
     private static final String URL = "jdbc:h2:./data/sample;DB_CLOSE_DELAY=-1";
@@ -55,7 +51,8 @@ public class DatabaseManager {
         }
     }
 
-    public void addUser(String name, String password) {
+    public int addUser(String name, String password) {
+        int userId = -1;
         try {
             String query = "INSERT INTO users (name, password) VALUES (?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -66,24 +63,25 @@ public class DatabaseManager {
                 // Retrieve the generated user ID
                 try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
-                        int userId = generatedKeys.getInt(1);
-                        System.out.println("User added with ID: " + userId);
+                         userId = generatedKeys.getInt(1);
                     }
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return userId;
     }
 
 
-    public void addBooking( double price, int user_id ,String description) {
+    public void addBooking(double price, int user_id , String description) {
+
         try {
             String query = "INSERT INTO booking (price,user_id, description) VALUES (?,?,?)";
             try (PreparedStatement statement = connection.prepareStatement(query)) {
-                statement.setDouble(2, price);
-                statement.setInt(3 , user_id);
-                statement.setString(4, description);
+                statement.setDouble(1, price);
+                statement.setInt(2, user_id);
+                statement.setString(3, description);
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
@@ -91,57 +89,24 @@ public class DatabaseManager {
         }
     }
 
-    public User getUserById(int userId) {
-        User user = null;
+
+    public String getPasswordByUsername(String userName) {
         try {
-            String query = "SELECT * FROM users WHERE id = ?";
+            String query = "SELECT password FROM users WHERE name = ?";
             try (PreparedStatement statement = connection.prepareStatement(query)) {
-                statement.setInt(1, userId);
+                statement.setString(1, userName);
+
                 try (ResultSet resultSet = statement.executeQuery()) {
                     if (resultSet.next()) {
-                        user = new User(
-                                resultSet.getInt("id"),
-                                resultSet.getString("name"),
-                                resultSet.getString("password")
-                        );
+                        return resultSet.getString("password");
                     }
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return user;
+        return null;
     }
-
-//    public BookingDB getBookingWithUser(int bookingId) {
-//        BookingDB booking = null;
-//        try {
-//            String query = "SELECT * FROM booking b JOIN users u ON b.user_id = u.id WHERE b.id = ?";
-//            try (PreparedStatement statement = connection.prepareStatement(query)) {
-//                statement.setInt(1, bookingId);
-//                try (ResultSet resultSet = statement.executeQuery()) {
-//                    if (resultSet.next()) {
-//                        User user = new User(
-//                                resultSet.getInt("u.id"),
-//                                resultSet.getString("u.name"),
-//                                resultSet.getString("u.password")
-//                        );
-//
-//                        booking = new BookingDB(
-//                                resultSet.getInt("b.id"),
-//                                user,
-//                                resultSet.getDouble("price"),
-//                                resultSet.getString("description")
-//                        );
-//                    }
-//                }
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        return booking;
-//    }
-
     public void closeConnection() {
         try {
             if (connection != null) {
@@ -226,6 +191,53 @@ public class DatabaseManager {
             e.printStackTrace();
         }
         return user;
+    }
+    public void clearDatabase() {
+        try {
+
+            String deleteBookingQuery = "DELETE FROM booking WHERE user_id IN (SELECT id FROM users)";
+            try (PreparedStatement bookingStatement = connection.prepareStatement(deleteBookingQuery)) {
+                bookingStatement.executeUpdate();
+            }
+
+
+            String deleteUserQuery = "DELETE FROM users";
+            try (PreparedStatement userStatement = connection.prepareStatement(deleteUserQuery)) {
+                userStatement.executeUpdate();
+                System.out.println("Database cleared successfully.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        DatabaseManager db=new DatabaseManager();
+        db.clearDatabase();
+    }
+
+    public void updateUserIfExists(String userName, String newPassword, double newPrice, String newDescription) {
+        try {
+            User existingUser = getUserByName(userName);
+
+            if (existingUser != null) {
+                // User exists, update the user information
+                String updateQuery = "UPDATE users SET password = ?, price = ?, description = ? WHERE name = ?";
+                try (PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
+                    updateStatement.setString(2, newPassword);
+                    updateStatement.setDouble(3, newPrice);
+                    updateStatement.setString(4, newDescription);
+                    updateStatement.setString(1, userName);
+                    updateStatement.executeUpdate();
+
+                    System.out.println("User information updated for: " + userName);
+                }
+            } else {
+                System.out.println("User not found. Cannot update information.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 }

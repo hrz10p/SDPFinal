@@ -36,6 +36,4 @@ public class HotelManager {
             b.update(msg);
         }
     }
-
-    // Implement methods for managing rooms, bookings, and customer data.
 }
