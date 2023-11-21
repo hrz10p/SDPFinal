@@ -7,7 +7,7 @@ public class BreakfastDecorator extends BookingDecorator{
     }
     @Override
     public String getDescription() {
-        return room.getDescription() + "with Breakfast";
+        return room.getDescription() + ", with Breakfast";
     }
 
     @Override

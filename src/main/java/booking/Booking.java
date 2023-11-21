@@ -14,19 +14,20 @@ public class Booking implements Observer, BookingPayment, BookingInterface {
     private Room room;
     private PricingStrategy strategy;
     private PaymentSystem paymentSystem;
-
-    public Booking(Room room, PricingStrategy strategy , String client , PaymentSystem paymentSystem) {
+    private int days;
+    public Booking(Room room, PricingStrategy strategy , String client , PaymentSystem paymentSystem,int days) {
         this.paymentSystem=paymentSystem;
         this.client=client;
         this.room = room;
         this.strategy = strategy;
         this.id = nextId;
         nextId++;
+        this.days=days;
     }
 
     @Override
     public double getPrice(){
-        return strategy.calculatePrice(room.getCost());
+        return strategy.calculatePrice(room.getCost()*days);
     }
     @Override
     public String getDescription(){

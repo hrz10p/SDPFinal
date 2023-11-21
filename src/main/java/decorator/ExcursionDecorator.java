@@ -8,7 +8,7 @@ public class ExcursionDecorator extends BookingDecorator {
     }
     @Override
     public String getDescription() {
-        return room.getDescription() + "with Excursion";
+        return room.getDescription() + ", with Excursion";
     }
 
     @Override

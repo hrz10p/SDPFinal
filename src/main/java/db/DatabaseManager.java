@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DatabaseManager {
-
     private static final String URL = "jdbc:h2:./data/sample;DB_CLOSE_DELAY=-1";
     private static final String USER = "sa";
     private static final String PASSWORD = "sa";
@@ -59,21 +58,29 @@ public class DatabaseManager {
     public void addUser(String name, String password) {
         try {
             String query = "INSERT INTO users (name, password) VALUES (?, ?)";
-            try (PreparedStatement statement = connection.prepareStatement(query)) {
+            try (PreparedStatement statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
                 statement.setString(1, name);
                 statement.setString(2, password);
                 statement.executeUpdate();
+
+                // Retrieve the generated user ID
+                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int userId = generatedKeys.getInt(1);
+                        System.out.println("User added with ID: " + userId);
+                    }
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void addBooking(int userId, double price, String description) {
+
+    public void addBooking( double price, String description) {
         try {
-            String query = "INSERT INTO booking (user_id, price, description) VALUES (?, ?, ?)";
+            String query = "INSERT INTO booking (price, description) VALUES (?,?)";
             try (PreparedStatement statement = connection.prepareStatement(query)) {
-                statement.setInt(1, userId);
                 statement.setDouble(2, price);
                 statement.setString(3, description);
                 statement.executeUpdate();
@@ -149,18 +156,75 @@ public class DatabaseManager {
             statement.executeUpdate();
         }
     }
+   public void showAllBookings() {
+       try {
+           String query = "SELECT * FROM booking";
+           try (PreparedStatement statement = connection.prepareStatement(query);
+                ResultSet resultSet = statement.executeQuery()) {
+               while (resultSet.next()) {
+                   int bookingId = resultSet.getInt("id");
+                   int userId = resultSet.getInt("user_id");
+                   double price = resultSet.getDouble("price");
+                   String description = resultSet.getString("description");
 
-    public static void main(String[] args) {
-        DatabaseManager dbManager = DatabaseManager.getInstance();
+                   // Assuming you have a toString method in your Booking class
+                   System.out.println("Booking ID: " + bookingId);
+                   System.out.println("User ID: " + userId);
+                   System.out.println("Price: " + price);
+                   System.out.println("Description: " + description);
+                   System.out.println();
+               }
+           }
+       } catch (SQLException e) {
+           e.printStackTrace();
+       }
+   }
+    public void showBookingsForUserName(String userName) {
+        try {
+            String query = "SELECT b.id AS booking_id, b.price, b.description, u.id AS user_id FROM booking b " +
+                    "JOIN users u ON b.user_id = u.id WHERE u.name = ?";
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setString(1, userName);
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    while (resultSet.next()) {
+                        int bookingId = resultSet.getInt("booking_id");
+                        int userId = resultSet.getInt("user_id");
+                        double price = resultSet.getDouble("price");
+                        String description = resultSet.getString("description");
 
-        // Example usage: Add a user and a booking
-        dbManager.addUser("John Doe", "password123");
-        dbManager.addBooking(1, 50.0, "Booking for John Doe");
-
-        // You can add more methods for reading data as needed
-
-        System.out.println(
-        dbManager.getUserById(1));
-        dbManager.closeConnection();
+                        // Assuming you have a toString method in your Booking class
+                        System.out.println("Booking ID: " + bookingId);
+                        System.out.println("User ID: " + userId);
+                        System.out.println("Price: " + price);
+                        System.out.println("Description: " + description);
+                        System.out.println();
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
+    public User getUserByName(String userName) {
+        User user = null;
+        try {
+            String query = "SELECT * FROM users WHERE name = ?";
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setString(1, userName);
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    if (resultSet.next()) {
+                        user = new User(
+                                resultSet.getInt("id"),
+                                resultSet.getString("name"),
+                                resultSet.getString("password")
+                        );
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
 }
