@@ -77,12 +77,13 @@ public class DatabaseManager {
     }
 
 
-    public void addBooking( double price, String description) {
+    public void addBooking( double price, int user_id ,String description) {
         try {
-            String query = "INSERT INTO booking (price, description) VALUES (?,?)";
+            String query = "INSERT INTO booking (price,user_id, description) VALUES (?,?,?)";
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setDouble(2, price);
-                statement.setString(3, description);
+                statement.setInt(3 , user_id);
+                statement.setString(4, description);
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
