@@ -221,6 +221,7 @@ public class Main {
             System.out.println("2. Back to Main Menu");
             System.out.println("3. Trigger fire alarm");
 
+
             Scanner adminScanner = new Scanner(System.in);
             int adminChoice = adminScanner.nextInt();
             adminScanner.nextLine();
@@ -232,7 +233,7 @@ public class Main {
                     return;
                 }
                 case 3 -> hotelManager.FireAlarm();
-                default -> System.out.println("Invalid choice. Please enter '1' or '2'.");
+                default -> System.out.println("Invalid choice. Please enter '1' or '2' or '3'.");
             }
         }
     }
