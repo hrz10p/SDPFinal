@@ -49,9 +49,9 @@ public class Main {
         while (true) {
             System.out.println("Please choose which room you want?");
             System.out.println("Select a room type:");
-            System.out.println("1. Family Room");
-            System.out.println("2. Luxury Room");
-            System.out.println("3. Standard Room");
+            System.out.println("1. Family Room-35000KZT");
+            System.out.println("2. Luxury Room-50000KZT");
+            System.out.println("3. Standard Room-20000KZT");
             System.out.println("4. None (to exit)");
 
             int roomChoice = scanner.nextInt();
@@ -78,9 +78,9 @@ public class Main {
 
             while (true) {
                 System.out.println("Select some pluses for your room:");
-                System.out.println("1. Breakfast");
-                System.out.println("2. Excursion");
-                System.out.println("3. Transfer");
+                System.out.println("1. Breakfast-5000KZT");
+                System.out.println("2. Excursion-10000KZT");
+                System.out.println("3. Transfer-10000KZT");
                 System.out.println("4. None (to finish booking)");
 
                 int addChoice = scanner.nextInt();
