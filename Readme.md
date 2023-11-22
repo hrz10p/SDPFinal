@@ -119,3 +119,52 @@ Future improvements to the project may include:
 - Enhancing the CLI to provide more user-friendly interactions.
 - Adding support for a graphical user interface (GUI) to improve accessibility.
 - Incorporating additional design patterns or features to further showcase best practices in software development.
+
+
+## Singleton Pattern:
+
+**Purpose:**
+Ensures that a class has only one instance and provides a global point of access to that instance.
+
+**Usage in Project:**
+`HotelManager` class is a singleton managing hotel bookings to prevent multiple instances and ensure a centralized booking management system.
+
+## Observer Pattern:
+
+**Purpose:**
+Defines a one-to-many dependency between objects so that when one object changes state, all its dependents are notified and updated automatically.
+
+**Usage in Project:**
+`Observer` interface and `HotelManager` class implement the observer pattern to notify bookings (observers) about events like fire alarms.
+
+## Factory Pattern:
+
+**Purpose:**
+Defines an interface for creating an object but leaves the choice of its type to the subclasses, creating instances of classes without specifying their concrete types.
+
+**Usage in Project:**
+`RoomFactory` interface and its implementations (`StandardRoomFactory` and `LuxuryRoomFactory`) create instances of rooms without specifying their exact type.
+
+## Decorator Pattern:
+
+**Purpose:**
+Attaches additional responsibilities to an object dynamically, providing a flexible alternative to subclassing for extending functionality.
+
+**Usage in Project:**
+`BookingDecorator` abstract class and its concrete implementations (`BreakfastDecorator` and `ExcursionDecorator`) add features like breakfast or excursions to room bookings.
+
+## Adapter Pattern:
+
+**Purpose:**
+Allows the interface of an existing class to be used as another interface, converting one interface into a compatible one.
+
+**Usage in Project:**
+`CreditCardPaymentAdapter` adapts the `CreditCardPayment` class to the `BookingPayment` interface, allowing it to be used where payment processing is expected.
+
+## Strategy Pattern:
+
+**Purpose:**
+Defines a family of algorithms, encapsulates each one, and makes them interchangeable. Strategy lets the algorithm vary independently from clients that use it.
+
+**Usage in Project:**
+`PricingStrategy` interface and its implementations (`DiscountPricingStrategy` and `StandardPricingStrategy`) encapsulate different pricing strategies, allowing them to be interchangeable in the booking process.

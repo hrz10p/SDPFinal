@@ -18,9 +18,10 @@ import java.util.Scanner;
 
 
 public class Main {
+    private static HotelManager hotelManager = HotelManager.getInstance();
+    private static DatabaseManager db = DatabaseManager.getInstance();
     public static void main(String[] args) {
-        HotelManager hotelManager = HotelManager.getInstance();
-        DatabaseManager db = DatabaseManager.getInstance();
+
         Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println("Welcome to our hotel");
@@ -218,6 +219,7 @@ public class Main {
             System.out.println("Admin access - Options:");
             System.out.println("1. View Database");
             System.out.println("2. Back to Main Menu");
+            System.out.println("3. Trigger fire alarm");
 
             Scanner adminScanner = new Scanner(System.in);
             int adminChoice = adminScanner.nextInt();
@@ -229,6 +231,7 @@ public class Main {
                     System.out.println("Exiting admin session. Returning to the main menu.");
                     return;
                 }
+                case 3 -> hotelManager.FireAlarm();
                 default -> System.out.println("Invalid choice. Please enter '1' or '2'.");
             }
         }

@@ -38,6 +38,7 @@ public class Booking implements Observer, BookingPayment, BookingInterface {
     public void update(String msg) {
         System.out.println("Room type:"+this.room.getDescription());
         System.out.println("Client name:"+this.client);
+        System.out.println(msg);
     }
 
 
